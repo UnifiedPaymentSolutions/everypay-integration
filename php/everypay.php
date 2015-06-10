@@ -4,13 +4,14 @@ class Everypay
 {
     const _VERIFY_SUCCESS = 1; // payment successful
     const _VERIFY_CANCEL = 2;  // payment cancelled
+    const _VERIFY_FAIL = 3;    // payment failed
 
     private $api_username;
     private $api_secret;
     private $statuses = array(
         'completed' => self::_VERIFY_SUCCESS,
-        'failed' => self::_VERIFY_CANCEL,
         'cancelled' => self::_VERIFY_CANCEL,
+        'failed'    => self::_VERIFY_FAIL
     );
 
     public function init($api_username, $api_secret)
@@ -93,7 +94,7 @@ class Everypay
      *
      * @param $data array
      *
-     * @return int 1 - verified successful payment, 2 - verified cancelled payment
+     * @return int 1 - verified successful payment, 2 - verified cancelled payment, 3 - verified failed payment
      * @throws Exception
      */
     
