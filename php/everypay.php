@@ -139,7 +139,9 @@ class Everypay
                 // only in automatic callback message
                 if (isset($data['processing_errors'])) {
                     $verify['processing_errors'] = $data['processing_errors'];
-                } elseif (isset($data['processing_warnings'])) {
+                }
+
+                if (isset($data['processing_warnings'])) {
                     $verify['processing_warnings'] = $data['processing_warnings'];
                 }
 
