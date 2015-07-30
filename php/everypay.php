@@ -128,19 +128,13 @@ class Everypay
         */
 
         $status = $this->statuses[$data['transaction_result']];
-        // common data
-        $verify = array(
-            'api_username'        => $data['api_username'],
-            'nonce'               => $data['nonce'],
-            'order_reference'     => $data['order_reference'],
-            'payment_state'       => $data['payment_state'],
-            'timestamp'           => $data['timestamp'],
-            'transaction_result'  => $data['transaction_result'],
-            'account_id'          => $data['account_id'],
-            'amount'              => $data['amount'],
-            'payment_reference'   => $data['payment_reference'],
-            'cc_last_four_digits' => $data['cc_last_four_digits']
-        );
+
+        $verify = array();
+        $hmac_fields = explode(',', $data["hmac_fields"]);
+
+        foreach ($hmac_fields as $value) {
+          $verify[$value] = $data[$value];
+        }
 
         switch ($data['transaction_result'])
         {
