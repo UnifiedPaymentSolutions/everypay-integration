@@ -133,7 +133,7 @@ class Everypay
         $hmac_fields = explode(',', $data["hmac_fields"]);
 
         foreach ($hmac_fields as $value) {
-          $verify[$value] = $data[$value];
+            $verify[$value] = empty($data[$value]) ? '' : $data[$value];
         }
 
         switch ($data['transaction_result'])
