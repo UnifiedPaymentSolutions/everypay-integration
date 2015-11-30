@@ -57,14 +57,15 @@ window.addEventListener('message', function(event) {
     shrinkIframe(iframe, shrinked_iframe_data);
   }
 
-  // An example of a possible way to process message data. Note, all fields, except transaction_result, are locale dependant.
+  // An example of a possible way to process message data. Note, all fields, except transaction_result, are locale dependent - 
+  // the texts are returned in the language specified in the API request locale parameter.
   //
   // if (message.transaction_result) {
   //   jQuery('.transaction_result').append(message.transaction_result); // Transaction's result. Possible states: completed, failed.
-  //   jQuery('.message_title').append(message.message_title);           // "Sorry, payment was successfull/unsuccessfull" or some similar message
-  //   jQuery('.message_error').append(message.message_error);           // Contains error details about payment's faliure, could be empty even if there is an error.
-  //   jQuery('.message_action').append(message.message_action);         // Contains suggestions about what the customer should do to be able to perform a successful payment
-  //   jQuery('.message_contact').append(message.message_contact);       // Contains instructions about who the customer should contact if the problem persists
+  //   jQuery('.message_title').append(message.message_title);           // Contains payment result page title - "Thank you! Payment successful." or "Sorry, payment was unsuccessful."
+  //   jQuery('.message_error').append(message.message_error);           // Contains information about the cause of payment's failure, if the exact reason is known and can be revealed to the buyer.
+  //   jQuery('.message_action').append(message.message_action);         // Contains suggestions about what the customer should do to be able to perform a successful payment.
+  //   jQuery('.message_contact').append(message.message_contact);       // Contains instructions about who the customer should contact if the problem persists.
   // }
   //
 }, false);
