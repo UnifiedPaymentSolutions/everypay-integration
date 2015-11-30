@@ -57,8 +57,14 @@ window.addEventListener('message', function(event) {
     shrinkIframe(iframe, shrinked_iframe_data);
   }
 
-  // It receives a message from the iframe about transaction's result. Possible states: completed, failed.
-  if (message.transaction_result) {
-    jQuery('.transaction_result').append(message.transaction_result);
-  }
+  // An example of a possible way to process message data. Note, all fields, except transaction_result, are locale dependant.
+  //
+  // if (message.transaction_result) {
+  //   jQuery('.transaction_result').append(message.transaction_result); // Transaction's result. Possible states: completed, failed.
+  //   jQuery('.message_title').append(message.message_title);           // "Sorry, payment was successfull/unsuccessfull" or some similar message
+  //   jQuery('.message_error').append(message.message_error);           // Contains error details about payment's faliure, could be empty even if there is an error.
+  //   jQuery('.message_action').append(message.message_action);         // Contains suggestions about what the customer should do to be able to perform a successful payment
+  //   jQuery('.message_contact').append(message.message_contact);       // Contains instructions about who the customer should contact if the problem persists
+  // }
+  //
 }, false);
