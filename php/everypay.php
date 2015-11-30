@@ -8,21 +8,49 @@ class Everypay
 
     private $api_username;
     private $api_secret;
+    private $request_cc_token;
+    private $cc_token;
     private $statuses = array(
         'completed' => self::_VERIFY_SUCCESS,
         'cancelled' => self::_VERIFY_CANCEL,
         'failed'    => self::_VERIFY_FAIL
     );
 
-    public function init($api_username, $api_secret)
+    /**
+      * Initiates a payment.
+      *
+      * Expects following data as input:
+      * 'api_username' => api username,
+      * 'api_secret => api secret,
+      * array(
+      *  'request_cc_token' => request to get cc_token 1,
+      *  'cc_token' => token referencing a bank card
+      * )
+      *
+      * @param $api_username string
+      * @param $api_secret string
+      * @param $data array
+      * @example $everypay->init('api_username', 'api_secret', array('cc_token' => 'token'));
+      *
+      * @return Everypay
+    */
+
+    public function init($api_username, $api_secret, $data = '')
     {
         $this->api_username = $api_username;
         $this->api_secret = $api_secret;
+
+        if (isset($data['request_cc_token'])) {
+          $this->request_cc_token = $data['request_cc_token'];
+        }
+
+        if (isset($data['cc_token'])) {
+          $this->cc_token = $data['cc_token'];
+        }
     }
 
     /**
-      * Populates and returns array of fields to be submitted
-      * for payment.
+      * Populates and returns array of fields to be submitted for payment.
       *
       * Expects following data as input:
       * array(
@@ -41,7 +69,9 @@ class Everypay
       *  'email' => customer email address,
       *  'order_reference' => order reference number,
       *  'user_ip' => user ip address,
-      *  'hmac_fields' => string which contains all fields (keys) that are going to be used in hmac calculation, separated by comma.
+      *  'hmac_fields' => string which contains all fields (keys) that are going to be used in hmac calculation, separated by comma,
+      *  'request_cc_token' => request to get cc_token 1,
+      *  'cc_token' => token referencing a bank card
       * );
       *
       * @param $data array
@@ -50,21 +80,29 @@ class Everypay
       * @return Array
     */
 
-    public function getFields(array $data, $language = 'en', $hmac_fields = false)
+    public function getFields(array $data, $language = 'en')
     {
         $data['api_username'] = $this->api_username;
         $data['nonce'] = $this->getNonce();
         $data['timestamp'] = time();
         $data['transaction_type'] = 'authorisation';
 
-        if ($hmac_fields == true) {
+        if (isset($this->request_cc_token)) {
+            $data['request_cc_token'] = $this->request_cc_token;
+        }
+
+        if (isset($this->cc_token)) {
+            $data['cc_token'] = $this->cc_token;
+        }
+
+        if (isset($data['hmac_fields'])) {
             $keys = array_keys($data);
             $keys[] = 'hmac_fields';
             asort($keys);
             $data['hmac_fields'] = implode(',', $keys);
         }
 
-        $data['hmac'] = $this->signData($this->prepareData($data));
+        $data['hmac'] = $this->signData($this->serializeData($data));
         $data['locale'] = $language;
 
         return $data;
@@ -78,22 +116,23 @@ class Everypay
       * for successful and failed payments:
       *
       * array(
-      *  'account_id' => account id in Everypay system
+      *  'account_id' => account id in Everypay system,
       *  'amount' => amount to pay,
       *  'api_username' => api username,
-      *  'nonce' => return nonce
+      *  'nonce' => return nonce,
       *  'order_reference' => order reference number,
       *  'payment_reference' => payment reference number,
       *  'payment_state' => payment state,
       *  'timestamp' => timestamp,
-      *  'transaction_result' => transaction result
+      *  'transaction_result' => transaction result,
+      *  'hmac_fields' => string which contains all fields (keys) that are going to be used in hmac calculation, separated by comma.
       * );
       *
       * for cancelled payments:
       *
       * array(
       *  'api_username' => api username,
-      *  'nonce' => return nonce
+      *  'nonce' => return nonce,
       *  'order_reference' => order reference number,
       *  'payment_state' => payment state,
       *  'timestamp' => timestamp,
@@ -103,28 +142,28 @@ class Everypay
 
       * @param $data array
       *
-      * @return int 1 - verified successful payment, 2 - verified cancelled payment, 3 - verified failed payment
+      * @return int 1 - verified successful payment, 2 - cancelled, 3 - failed
       * @throws Exception
     */
 
     public function verify(array $data)
     {
-        if ($data['api_username'] !== $this->api_username)
+        if ($data['api_username'] !== $this->api_username) {
             throw new Exception('Invalid username.');
+        }
 
         $now = time();
-        if (($data['timestamp'] > $now) || ($data['timestamp'] < ($now - 600)))
+        if (($data['timestamp'] > $now) || ($data['timestamp'] < ($now - 600))) {
             throw new Exception('Response outdated.');
-
-        //  if ($data['order_reference'] != $this->getOrderReference())
-        //      throw new Exception('Order number doesn\'t match.');
+        }
 
         /**
           * Refer to the Integration Manual for more information about 'order_reference' validation.
         */
 
-        if (!$this->verifyNonce($data['nonce']))
+        if (!$this->verifyNonce($data['nonce'])) {
             throw new Exception('Nonce is already used.');
+        }
 
         /**
           * Refer to the Integration Manual for more information about 'nonce' uniqueness validation.
@@ -139,9 +178,10 @@ class Everypay
             $verify[$value] = empty($data[$value]) ? '' : $data[$value];
         }
 
-        $hmac = $this->signData($this->prepareData($verify));
-        if ($data['hmac'] != $hmac)
+        $hmac = $this->signData($this->serializeData($verify));
+        if ($data['hmac'] != $hmac) {
             throw new Exception('Invalid HMAC.');
+        }
 
         return $status;
     }
@@ -156,8 +196,6 @@ class Everypay
         return true;
     }
 
-    //  abstract protected function getOrderReference();
-
     /**
       * Prepare data package for signing
       *
@@ -165,12 +203,11 @@ class Everypay
       * @return string
     */
 
-    private function prepareData(array $data)
+    private function serializeData(array $data)
     {
         $arr = array();
         ksort($data);
-        foreach ($data as $k => $v)
-        {
+        foreach ($data as $k => $v) {
             $arr[] = $k . '=' . $v;
         }
         return implode('&', $arr);
