@@ -175,7 +175,7 @@ class Everypay
         $hmac_fields = explode(',', $data["hmac_fields"]);
 
         foreach ($hmac_fields as $value) {
-            $verify[ $value ] = isset( $data[ $value ] ) ? $data[ $value ] : '';
+            $verify[$value] = isset($data[$value]) ? $data[$value] : '';
         }
 
         $hmac = $this->signData($this->serializeData($verify));
