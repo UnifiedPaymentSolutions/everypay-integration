@@ -42,7 +42,7 @@ var shrinked_iframe_data;
 var iframe = jQuery('#iframe-payment-container iframe'); // iframe selector should be used
 
 window.addEventListener('message', function(event) {
-  if (event.origin !== "https://igw-demo.every-pay.com") { return; } // production or demo URL should be used (production URL: https://pay.every-pay.eu)
+  if (event.origin !== "https://igw-demo.every-pay.com" && event.origin !== "https://pay.every-pay.eu") { return; }
 
   var message = JSON.parse(event.data);
   /* 
