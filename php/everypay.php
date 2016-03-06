@@ -85,7 +85,7 @@ class Everypay
         $data['api_username'] = $this->api_username;
         $data['nonce'] = $this->getNonce();
         $data['timestamp'] = time();
-        $data['transaction_type'] = 'authorisation';
+        $data['transaction_type'] = 'charge';
 
         if (isset($this->request_cc_token)) {
             $data['request_cc_token'] = $this->request_cc_token;
@@ -95,7 +95,7 @@ class Everypay
             $data['cc_token'] = $this->cc_token;
         }
 
-        if (isset($data['hmac_fields'])) {
+        $data['hmac_fields'] {
             $keys = array_keys($data);
             $keys[] = 'hmac_fields';
             asort($keys);
