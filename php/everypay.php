@@ -95,12 +95,10 @@ class Everypay
             $data['cc_token'] = $this->cc_token;
         }
 
-        $data['hmac_fields'] {
-            $keys = array_keys($data);
-            $keys[] = 'hmac_fields';
-            asort($keys);
-            $data['hmac_fields'] = implode(',', $keys);
-        }
+        $keys = array_keys($data);
+        $keys[] = 'hmac_fields';
+        asort($keys);
+        $data['hmac_fields'] = implode(',', $keys);
 
         $data['hmac'] = $this->signData($this->serializeData($data));
         $data['locale'] = $language;
