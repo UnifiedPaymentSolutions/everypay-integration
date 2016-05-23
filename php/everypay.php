@@ -1,6 +1,6 @@
 <?php
 
-class Everypay
+class EveryPay
 {
     const _VERIFY_SUCCESS = 1; // payment successful
     const _VERIFY_CANCEL = 2;  // payment cancelled
@@ -32,7 +32,7 @@ class Everypay
       * @param $data array
       * @example $everypay->init('api_username', 'api_secret', array('cc_token' => 'token'));
       *
-      * @return Everypay
+      * @return EveryPay
     */
 
     public function init($api_username, $api_secret, $data = '')
@@ -77,7 +77,7 @@ class Everypay
       * @param $data array
       * @param $language string
       *
-      * @return Array
+      * @return array
     */
 
     public function getFields(array $data, $language = 'en')
@@ -114,7 +114,7 @@ class Everypay
       * for successful and failed payments:
       *
       * array(
-      *  'account_id' => account id in Everypay system,
+      *  'account_id' => account id in EveryPay system,
       *  'amount' => amount to pay,
       *  'api_username' => api username,
       *  'nonce' => return nonce,
