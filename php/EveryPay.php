@@ -10,11 +10,6 @@ class EveryPay
     private $api_secret;
     private $request_cc_token;
     private $cc_token;
-    private $statuses = array(
-        'completed' => self::_VERIFY_SUCCESS,
-        'cancelled' => self::_VERIFY_CANCEL,
-        'failed'    => self::_VERIFY_FAIL
-    );
 
     /**
       * Initiates a payment.
@@ -167,7 +162,7 @@ class EveryPay
           * Refer to the Integration Manual for more information about 'nonce' uniqueness validation.
         */
 
-        $status = $this->statuses[$data['transaction_result']];
+        $status = $this->statuses($data['payment_state']);
 
         $verify = array();
         $hmac_fields = explode(',', $data["hmac_fields"]);
@@ -192,6 +187,19 @@ class EveryPay
     protected function verifyNonce($nonce)
     {
         return true;
+    }
+
+    private function statuses($state) {
+        switch ($state) {
+            case 'settled':
+            case 'authorised':
+                return self::_VERIFY_SUCCESS;
+            case 'cancelled':
+            case 'waiting_for_3ds_response':
+                return self::_VERIFY_CANCEL;
+            case 'failed':
+                return self::_VERIFY_FAIL;
+        }
     }
 
     /**
