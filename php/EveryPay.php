@@ -91,7 +91,10 @@ class EveryPay
         }
 
         $keys = array_keys($data);
-        $keys[] = 'hmac_fields';
+        // ensure that hmac_fields itself is mentioned in hmac_fields
+        if (!in_array('hmac_fields', $keys)){
+          $keys[] = 'hmac_fields';
+        }
         asort($keys);
         $data['hmac_fields'] = implode(',', $keys);
 
