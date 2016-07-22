@@ -10,6 +10,7 @@ class EveryPay
     private $api_secret;
     private $request_cc_token;
     private $cc_token;
+    private $transaction_type;
 
     /**
       * Initiates a payment.
@@ -41,6 +42,10 @@ class EveryPay
 
         if (isset($data['cc_token'])) {
           $this->cc_token = $data['cc_token'];
+        }
+
+        if (isset($data['transaction_type'])) {
+          $this->transaction_type = $data['transaction_type'];
         }
     }
 
@@ -78,9 +83,9 @@ class EveryPay
     public function getFields(array $data, $language = 'en')
     {
         $data['api_username'] = $this->api_username;
+        $data['transaction_type'] = $this->transaction_type;
         $data['nonce'] = $this->getNonce();
         $data['timestamp'] = time();
-        $data['transaction_type'] = 'charge';
 
         if (isset($this->request_cc_token)) {
             $data['request_cc_token'] = $this->request_cc_token;
