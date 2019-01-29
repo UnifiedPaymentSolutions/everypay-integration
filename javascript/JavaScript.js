@@ -26,13 +26,10 @@ var expandIframe = function() {
   jQuery('body').append("<div id='dimmed_background_box'></div>");
   jQuery('#dimmed_background_box').css({ height:'100%',width:'100%',position:'fixed',top:0,left:0,zIndex:9998,backgroundColor:'#000000',opacity:0.5 });
 
-  var everypay_window_height = jQuery(window).height();
-  var everypay_window_width = jQuery(window).width();
-
-  if (everypay_window_width < 960) {
-    iframe.css({ height:everypay_window_height,width:everypay_window_width,top:0 });
+  if (jQuery(window).width() < 960) {
+    iframe.css({ height:jQuery(window).height(),width:jQuery(window).width(),top:0 });
   } else {
-    iframe.css({ height:640,width:960,top:(everypay_window_height-640)/2 });
+    iframe.css({ height:640,width:960,top:(jQuery(window).height()-640)/2 });
   }
   iframe.css({ position:'fixed',zIndex:9999,margin:'auto' });
   return iframe_data;
