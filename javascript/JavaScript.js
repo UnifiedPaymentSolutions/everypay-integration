@@ -4,13 +4,13 @@
   <iframe width="460" height="325" style="border: 0px; height: 325; width: 460"></iframe>
 </div>
 
-N.B. iframe-payment-container is used as a placeholder during the time when the iframe is expanded. 
+N.B. iframe-payment-container is used as a placeholder during the time when the iframe is expanded.
 */
 
 var shrinkIframe = function(iframe, iframe_data) {
   iframe.css(iframe_data);
   jQuery("#dimmed_background_box").remove();
-}; 
+};
 var expandIframe = function() {
   var iframe_data = {
     position: iframe.attr("position") || "static",
@@ -26,13 +26,13 @@ var expandIframe = function() {
   jQuery('body').append("<div id='dimmed_background_box'></div>");
   jQuery('#dimmed_background_box').css({ height:'100%',width:'100%',position:'fixed',top:0,left:0,zIndex:9998,backgroundColor:'#000000',opacity:0.5 });
 
-  var window_height = jQuery(window).height();
-  var window_width = jQuery(window).width();
+  var everypay_window_height = jQuery(window).height();
+  var everypay_window_width = jQuery(window).width();
 
-  if (window_width < 960) {
-    iframe.css({ height:window_height,width:window_width,top:0 });
+  if (everypay_window_width < 960) {
+    iframe.css({ height:everypay_window_height,width:everypay_window_width,top:0 });
   } else {
-    iframe.css({ height:640,width:960,top:(window_height-640)/2 });
+    iframe.css({ height:640,width:960,top:(everypay_window_height-640)/2 });
   }
   iframe.css({ position:'fixed',zIndex:9999,margin:'auto' });
   return iframe_data;
@@ -45,7 +45,7 @@ window.addEventListener('message', function(event) {
   if (event.origin !== "https://igw-demo.every-pay.com" && event.origin !== "https://pay.every-pay.eu") { return; }
 
   var message = JSON.parse(event.data);
-  /* 
+  /*
   1. An "expand" message is sent from the iframe page when 3D secure page is going to be displayed.
      The size of the iframe should be adjusted to hold 3D secure page
   2. A "shrink" message is sent from the iframe page when a user has provided authorisation details on the 3D secure page.
@@ -57,7 +57,7 @@ window.addEventListener('message', function(event) {
     shrinkIframe(iframe, shrinked_iframe_data);
   }
 
-  // An example of a possible way to process message data. Note, all fields, except transaction_result, are locale dependent - 
+  // An example of a possible way to process message data. Note, all fields, except transaction_result, are locale dependent -
   // the texts are returned in the language specified in the API request locale parameter.
   //
   // if (message.transaction_result) {
