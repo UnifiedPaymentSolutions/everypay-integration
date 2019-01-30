@@ -11,7 +11,7 @@ var EveryPay = {
     iframe.css(iframe_data);
     jQuery("#dimmed_background_box").remove();
   },
-  expandIframe: function() {
+  expandIframe: function(iframe) {
     var iframe_data = {
       position: iframe.attr("position") || "static",
       top: iframe.position().top,
@@ -35,8 +35,10 @@ var EveryPay = {
     return iframe_data;
   }
 };
-var shrinked_iframe_data;
-var iframe = jQuery('#iframe-payment-container iframe'); // iframe selector should be used
+var EveryPayAvailables = {
+  shrinked_iframe_data: "",
+  iframe: jQuery('#iframe-payment-container iframe') // iframe selector should be used
+};
 
 window.addEventListener('message', function(event) {
   if (event.origin !== "https://igw-demo.every-pay.com" && event.origin !== "https://pay.every-pay.eu") { return; }
@@ -49,9 +51,9 @@ window.addEventListener('message', function(event) {
      The size of the iframe should be set to the initial values
   */
   if (message.resize_iframe == "expand") {
-    shrinked_iframe_data = EveryPay.expandIframe(iframe);
+    EveryPayAvailables.shrinked_iframe_data = EveryPay.expandIframe(EveryPayAvailables.iframe);
   } else if (message.resize_iframe == "shrink") {
-    EveryPay.shrinkIframe(iframe, shrinked_iframe_data);
+    EveryPay.shrinkIframe(EveryPayAvailables.iframe, EveryPayAvailables.shrinked_iframe_data);
   }
 
   // An example of a possible way to process message data. Note, all fields, except transaction_result, are locale dependent -
