@@ -6,35 +6,35 @@
 
 N.B. iframe-payment-container is used as a placeholder during the time when the iframe is expanded.
 */
+var EveryPay = {
+  shrinkIframe: function(iframe, iframe_data) {
+    iframe.css(iframe_data);
+    jQuery("#dimmed_background_box").remove();
+  },
+  expandIframe: function() {
+    var iframe_data = {
+      position: iframe.attr("position") || "static",
+      top: iframe.position().top,
+      left: iframe.position().left,
+      width: iframe.width(),
+      height: iframe.height(),
+      zIndex: iframe.attr("zIndex"),
+      marginLeft: iframe.attr("marginLeft"),
+      marginRight: iframe.attr("marginRight")
+    };
 
-var shrinkIframe = function(iframe, iframe_data) {
-  iframe.css(iframe_data);
-  jQuery("#dimmed_background_box").remove();
-};
-var expandIframe = function() {
-  var iframe_data = {
-    position: iframe.attr("position") || "static",
-    top: iframe.position().top,
-    left: iframe.position().left,
-    width: iframe.width(),
-    height: iframe.height(),
-    zIndex: iframe.attr("zIndex"),
-    marginLeft: iframe.attr("marginLeft"),
-    marginRight: iframe.attr("marginRight")
-  };
+    jQuery('body').append("<div id='dimmed_background_box'></div>");
+    jQuery('#dimmed_background_box').css({ height:'100%',width:'100%',position:'fixed',top:0,left:0,zIndex:9998,backgroundColor:'#000000',opacity:0.5 });
 
-  jQuery('body').append("<div id='dimmed_background_box'></div>");
-  jQuery('#dimmed_background_box').css({ height:'100%',width:'100%',position:'fixed',top:0,left:0,zIndex:9998,backgroundColor:'#000000',opacity:0.5 });
-
-  if (jQuery(window).width() < 960) {
-    iframe.css({ height:jQuery(window).height(),width:jQuery(window).width(),top:0 });
-  } else {
-    iframe.css({ height:640,width:960,top:(jQuery(window).height()-640)/2 });
+    if (jQuery(window).width() < 960) {
+      iframe.css({ height:jQuery(window).height(),width:jQuery(window).width(),top:0 });
+    } else {
+      iframe.css({ height:640,width:960,top:(jQuery(window).height()-640)/2 });
+    }
+    iframe.css({ position:'fixed',zIndex:9999,margin:'auto' });
+    return iframe_data;
   }
-  iframe.css({ position:'fixed',zIndex:9999,margin:'auto' });
-  return iframe_data;
 };
-
 var shrinked_iframe_data;
 var iframe = jQuery('#iframe-payment-container iframe'); // iframe selector should be used
 
@@ -49,9 +49,9 @@ window.addEventListener('message', function(event) {
      The size of the iframe should be set to the initial values
   */
   if (message.resize_iframe == "expand") {
-    shrinked_iframe_data = expandIframe(iframe);
+    shrinked_iframe_data = EveryPay.expandIframe(iframe);
   } else if (message.resize_iframe == "shrink") {
-    shrinkIframe(iframe, shrinked_iframe_data);
+    EveryPay.shrinkIframe(iframe, shrinked_iframe_data);
   }
 
   // An example of a possible way to process message data. Note, all fields, except transaction_result, are locale dependent -
